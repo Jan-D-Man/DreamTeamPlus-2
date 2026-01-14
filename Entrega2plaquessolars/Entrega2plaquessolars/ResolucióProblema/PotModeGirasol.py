@@ -1,15 +1,7 @@
 ﻿import numpy as np
 import matplotlib.pyplot as plt
+from Definicions import *
 
-# =============================================================================
-# 1. PARÀMETRES BASE (UAB)
-# =============================================================================
-RT, RS = 6371, 149600000
-omega_T = 2 * np.pi / 24
-lat_BCN = 41.3888 * np.pi / 180
-mu = (np.pi/2) - lat_BCN
-delta_rad = 23.45 * np.pi / 180
-I_0, area, eficiencia, p_max = 1381, 2, 0.2, 400
 
 dies_any = np.arange(1, 366)
 hores_dia = np.linspace(0, 24, 250)

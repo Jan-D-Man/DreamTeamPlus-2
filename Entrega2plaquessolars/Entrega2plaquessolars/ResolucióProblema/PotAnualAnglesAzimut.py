@@ -4,15 +4,6 @@ from Definicions import *
 from ResolucioEDO.RK4 import r_array_RK4, DeltaTheta
 
 
-# =============================================================================
-# 1. PARÀMETRES BASE (UAB)
-# =============================================================================
-RT, RS = 6371, 149600000
-omega_T = 2 * np.pi / 24
-lat_BCN = 41.3888 * np.pi / 180
-mu = (np.pi/2) - lat_BCN
-delta_rad = 23.45 * np.pi / 180
-I_0, area, eficiencia, p_max = 1381, 2, 0.2, 400
 
 dies_any = np.arange(1, 366)
 # Augmentem resolució temporal dins del dia per a una integral més precisa
@@ -71,12 +62,10 @@ def simulacio_vectoritzada(b_graus, g_graus):
 
     return np.array(mitjanes_diaries)
 
-# =============================================================================
-# 3. GENERACIÓ DE GRÀFIQUES COMPARATIVES
-# =============================================================================
+
 plt.figure(figsize=(15, 9))
 
-# --- GRÀFICA 1: VARIACIÓ D'ORIENTACIÓ ---
+
 plt.subplot(2, 1, 1)
 for i, g in enumerate([-90, -30, 0, 30, 90]):
     mitjanes = simulacio_vectoritzada(45, g)

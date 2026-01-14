@@ -1,22 +1,13 @@
 ﻿import numpy as np
 import matplotlib.pyplot as plt
+from Definicions import *
 
-# =============================================================================
-# 1. PARÀMETRES BASE (UAB)
-# =============================================================================
-RT, RS = 6371, 149600000
-omega_T = 2 * np.pi / 24
-lat_BCN = 41.3888 * np.pi / 180
-mu = (np.pi/2) - lat_BCN
-delta_rad = 23.45 * np.pi / 180
-I_0, area, eficiencia, p_max = 1381, 2, 0.2, 400
+
 
 day_of_year = 100 # Dia de primavera random
-LSTs = np.linspace(0, 24, 500) # Resolució per a les corbes suaus
+LSTs = np.linspace(0, 24, 500)
 
-# =============================================================================
-# 2. COMPARATIVA 1: VARIACIÓ D'ORIENTACIÓ (GAMMA_P)
-# =============================================================================
+# Paràmetres placa solar
 beta_fixed = np.pi/4  # 45 graus
 angles_or_graus = [-90, -30, -15, 0, 15, 30, 90]
 cmap = plt.get_cmap('tab10')
@@ -86,9 +77,7 @@ plt.xlabel("Hora solar (LST)"); plt.ylabel("Potència (W)")
 plt.legend(title="Azimut placa", bbox_to_anchor=(1.05, 1), fontsize=12, title_fontsize=13)
 plt.grid(True, alpha=0.3); plt.tight_layout()
 
-# =============================================================================
-# 3. COMPARATIVA 2: VARIACIÓ D'INCLINACIÓ (BETA)
-# =============================================================================
+# comparem amb diferents angles beta fixant l'azimut a 0° (Sud)
 betas_graus = [0, 15, 30, 45, 60, 90]
 g_fixed = 0 # Sud pur
 
@@ -102,10 +91,11 @@ for i, b_graus in enumerate(betas_graus):
     theta_dia = (2 * np.pi * (day_of_year - 172) / 365) - (np.pi / 2)
     t_central = (theta_dia / omega_T) + (np.pi / (2 * omega_T))
 
+    # Càlcul de la potència al llarg del dia
     for lst in LSTs:
         t = t_central + (lst - 12)
         arg = omega_T * t
-
+        # Vectors Rodrigues
         p_vec = np.array([
             -RT * np.sin(mu) * np.sin(arg),
             RT * (np.cos(mu)*np.sin(delta_rad) + np.sin(mu)*np.cos(delta_rad)*np.cos(arg)),
@@ -116,7 +106,7 @@ for i, b_graus in enumerate(betas_graus):
         d_unit = (-p_vec - s_vec) / np.linalg.norm(-p_vec - s_vec)
 
         alpha = np.arcsin(np.clip(np.dot(d_unit, p_unit), -1, 1))
-
+        # Càlcul de la potència si és de dia
         pot = 0
         if alpha > 0:
             e_est = np.array([-np.cos(arg), -np.cos(delta_rad)*np.sin(arg), np.sin(delta_rad)*np.sin(arg)])
@@ -129,9 +119,8 @@ for i, b_graus in enumerate(betas_graus):
                 pot = min(p_max, area * eficiencia * I_0 * cos_inc)
         pot_dia.append(pot)
 
-    energia = np.trapz(pot_dia, x=LSTs)
-    plt.plot(LSTs, pot_dia, color=cmap(i), label=f"β={b_graus}° (E={energia:.0f} Wh)")
-
+    energia = np.trapz(pot_dia, x=LSTs) # Energia del dia
+    plt.plot(LSTs, pot_dia, color=cmap(i), label=f"β={b_graus}° (E={energia:.0f} Wh)") 
 plt.tick_params(
     axis='both',
     direction='in',       # Guionets cap a dins

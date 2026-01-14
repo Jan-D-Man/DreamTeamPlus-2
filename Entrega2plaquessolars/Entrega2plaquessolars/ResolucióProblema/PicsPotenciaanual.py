@@ -7,39 +7,36 @@ from ResolucioEDO.RK4 import r_array_RK4, DeltaTheta
 
 
 
-RT, RS = 6371, 149600000
+# definim paràmetres
 omega_T = 2 * np.pi / 24
 lat_BCN = 41.3888 * np.pi / 180
 mu = (np.pi/2) - lat_BCN
 delta_rad = 23.45 * np.pi / 180
-# Calculem el temps total de l'òrbita
-temps = int(sum(r_array_RK4**2*DeltaTheta)*m/L)
-TEMPS = []
-z = 0
-# calculam els temps corresponents radi amb el sumatori acumulat per a cada cas
-for r_i in r_array_RK4:
-    t_i = sum(r_array_RK4[:z]**2*DeltaTheta)*m/L
-    TEMPS.append(t_i)
-    z = z +1
 
-# Transformem el tems a dies
+# Calculem el temps total de l'òrbita i l'array de temps corresponent a cada pas de theta
+TEMPS = (m / L) * np.cumsum(r_array_RK4**2) * DeltaTheta  # segons
+TEMPS = TEMPS * (365*24*3600) / TEMPS[-1] 
+
+# Transformem el temps a dies
 dies = np.array(TEMPS)/(3600*24)
-dies = np.round(np.array(TEMPS)/(3600*24))
-r_dies = np.array([r_array_RK4[np.round(TEMPS) == d].mean() for d in dies])
-r_dies = np.roll(r_dies, -172)
 
+# Fem la mitjana de r per cada dia
+r_dies = np.array([r_array_RK4[dies == d].mean() for d in dies])
+dies = np.unique(np.round(np.array(TEMPS)/(3600*24)))
+r_dies = np.roll(r_dies, -172) # fem que el primer dia sigui el solstici d'estiu
+
+# Paràmetres placa solar
 I_0, beta, gamma_p, area, eficiencia_total, p_max = 1381, 0, 0, 2, 0.2, 400
 
-
-dies_totals = np.arange(1, 366)
-hores_per_dia = np.linspace(0, 24, 100) # Més resolució per a una integral precisa
+hores_per_dia = np.linspace(0, 24, 100)
 
 temps_eix_x = []
 potencia_eix_y = []
 mitjanes_diaries = []
 dies_eix_mitjanes = []
-
-for n in dies_totals:
+# Càlcul per cada dia de l'any
+for n in dies.astype(int):
+    # Càlcul de la theta diari i el temps central
     theta_dia = (2 * np.pi * (n - 172) / 365) - (np.pi / 2)
     t_central_fisic = (theta_dia / omega_T) + (np.pi / (2 * omega_T))
 
@@ -49,22 +46,23 @@ for n in dies_totals:
         t_fisic = t_central_fisic + (hora_lst - 12)
         arg = omega_T * t_fisic
 
-        # Vectors
+        # Vectors Rodrigues
         px = -RT * np.sin(mu) * np.sin(arg)
         py = RT * (np.cos(mu)*np.sin(delta_rad) + np.sin(mu)*np.cos(delta_rad)*np.cos(arg))
         pz = RT * (np.cos(mu)*np.cos(delta_rad) - np.sin(mu)*np.sin(delta_rad)*np.cos(arg))
         p_vec = np.array([px, py, pz])
         p_unit = p_vec / RT
-
-        s_vec = np.array([r_dies[n] * np.cos(theta_dia), r_dies[n] * np.sin(theta_dia), 0])
-        d_vec = -p_vec - s_vec
+        
+        s_vec = np.array([r_dies[n-1] * np.cos(theta_dia), r_dies[n-1] * np.sin(theta_dia), 0])
+        d_vec = -p_vec - s_vec # vector Sol a l'observador
         d_norm = np.linalg.norm(d_vec)
         d_unit = d_vec / d_norm
-
+        # Elevació alpha
         sin_alpha = np.dot(d_vec, p_vec) / (d_norm * RT)    
         alpha = np.arcsin(np.clip(sin_alpha, -1, 1))
 
         pot = 0
+        # Càlcul de la potència si és de dia
         if alpha > 0:
             e_est = np.array([-np.cos(arg), -np.cos(delta_rad)*np.sin(arg), np.sin(delta_rad)*np.sin(arg)])
             e_nord = np.cross(p_unit, e_est)
@@ -97,7 +95,7 @@ ax.plot(temps_eix_x, potencia_eix_y, color='teal', linewidth=0.3, alpha=0.4, lab
 # 2. La línia de potència mitjana diària
 ax.plot(dies_eix_mitjanes, mitjanes_diaries, color='red', linewidth=2, label='Potencia mitjana diaria')
 
-# Estètica
+# formalitzem la gràfica
 mesos_noms = ['Gen', 'Feb', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Des']
 mesos_dies = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
 ax.set_xticks(mesos_dies)

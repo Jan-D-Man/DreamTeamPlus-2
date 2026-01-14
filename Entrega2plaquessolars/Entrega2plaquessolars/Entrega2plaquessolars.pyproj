@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>acbe01d2-4cd2-40c3-af44-66350fce75da</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>ResolucióProblema\PicsPotenciaanual.py</StartupFile>
+    <StartupFile>ResolucióProblema\PotAnualAnglesBeta.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,7 +22,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Definicions.py" />
-    <Compile Include="Entrega2plaquessolars.py" />
     <Compile Include="ResolucioEDO\Error.py" />
     <Compile Include="ResolucioEDO\3solucionsnum.py" />
     <Compile Include="ResolucioEDO\Euler.py" />
