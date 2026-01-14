@@ -1,0 +1,8 @@
+# Carpeta de Visual Studio
+.vs/
+Entrega2plaquessolars/.vs/
+**/.vs/
+
+# Dossiers de build típics
+bin/
+obj/
