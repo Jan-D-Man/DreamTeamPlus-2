@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>acbe01d2-4cd2-40c3-af44-66350fce75da</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Entrega2plaquessolars.py</StartupFile>
+    <StartupFile>ResolucióProblema\PicsPotenciaanual.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,7 +21,23 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Definicions.py" />
     <Compile Include="Entrega2plaquessolars.py" />
+    <Compile Include="ResolucioEDO\Error.py" />
+    <Compile Include="ResolucioEDO\3solucionsnum.py" />
+    <Compile Include="ResolucioEDO\Euler.py" />
+    <Compile Include="ResolucioEDO\RK4.py" />
+    <Compile Include="ResolucioEDO\RK2.py" />
+    <Compile Include="ResolucióProblema\PotModeGirasol.py" />
+    <Compile Include="ResolucióProblema\PicsPotenciaanual.py" />
+    <Compile Include="ResolucióProblema\PotAnualAnglesAzimut.py" />
+    <Compile Include="ResolucióProblema\PotAnualAnglesBeta.py" />
+    <Compile Include="ResolucióProblema\PotDiariaAngles.py" />
+    <Compile Include="ResolucióProblema\TrajectoriaSolar.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ResolucióProblema\" />
+    <Folder Include="ResolucioEDO\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
